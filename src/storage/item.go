@@ -6,6 +6,7 @@ import (
 	"html"
 	"strings"
 	"time"
+
 	xhtml "golang.org/x/net/html"
 )
 
@@ -342,44 +343,45 @@ func (s *Storage) SyncSearch() {
 }
 
 func (s *Storage) DeleteOldItems() {
-	rows, err := s.db.Query(fmt.Sprintf(`
-		select feed_id, count(*) as num_items
-		from items
-		where status != %d
-		group by feed_id
-		having num_items > 50
-	`, STARRED))
+	return
+	// rows, err := s.db.Query(fmt.Sprintf(`
+	// 	select feed_id, count(*) as num_items
+	// 	from items
+	// 	where status != %d
+	// 	group by feed_id
+	// 	having num_items > 50
+	// `, STARRED))
 
-	if err != nil {
-		s.log.Print(err)
-		return
-	}
+	// if err != nil {
+	// 	s.log.Print(err)
+	// 	return
+	// }
 
-	feedIds := make([]int64, 0)
-	for rows.Next() {
-		var id int64
-		rows.Scan(&id, nil)
-		feedIds = append(feedIds, id)
-	}
+	// feedIds := make([]int64, 0)
+	// for rows.Next() {
+	// 	var id int64
+	// 	rows.Scan(&id, nil)
+	// 	feedIds = append(feedIds, id)
+	// }
 
-	for _, feedId := range feedIds {
-		result, err := s.db.Exec(`
-			delete from items where feed_id = ? and status != ? and date_arrived < ?`,
-			feedId,
-			STARRED,
-			time.Now().Add(-time.Hour*24*90), // 90 days
-		)
-		if err != nil {
-			s.log.Print(err)
-			return
-		}
-		num, err := result.RowsAffected()
-		if err != nil {
-			s.log.Print(err)
-			return
-		}
-		if num > 0 {
-			s.log.Printf("Deleted %d old items (%d)", num, feedId)
-		}
-	}
+	// for _, feedId := range feedIds {
+	// 	result, err := s.db.Exec(`
+	// 		delete from items where feed_id = ? and status != ? and date_arrived < ?`,
+	// 		feedId,
+	// 		STARRED,
+	// 		time.Now().Add(-time.Hour*24*90), // 90 days
+	// 	)
+	// 	if err != nil {
+	// 		s.log.Print(err)
+	// 		return
+	// 	}
+	// 	num, err := result.RowsAffected()
+	// 	if err != nil {
+	// 		s.log.Print(err)
+	// 		return
+	// 	}
+	// 	if num > 0 {
+	// 		s.log.Printf("Deleted %d old items (%d)", num, feedId)
+	// 	}
+	// }
 }

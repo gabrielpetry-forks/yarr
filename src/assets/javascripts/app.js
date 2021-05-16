@@ -123,10 +123,42 @@ Vue.component('relative-time', {
   },
 })
 
+Vue.component('youtube-iframe', {
+  props: ['ytlink'],
+  computed: {
+    ytid: function() {
+      return this.ytlink.split(`watch?v=`)[1]
+    }
+  },
+  template: `
+    <iframe
+      width="100%"
+       title="YouTube video player"
+       :src="'https://www.youtube.com/embed/' + ytid"
+       frameborder="0"
+       allow="autoplay; picture-in-picture"
+       id="youtube-iframe"
+       allowfullscreen></iframe>
+  `,
+  mounted: function() {
+    const ytEl = document.getElementById('youtube-iframe')
+    // get the 16x9 aspect ration
+    ytEl.style.height = ytEl.offsetWidth / 1.77777777778 + 'px'
+  },
+  destroyed: function() {
+  }
+})
+
 var vm = new Vue({
   created: function() {
     this.refreshFeeds()
     this.refreshStats()
+    
+    // auto updates every 20 minutes
+    setInterval(() => {
+      this.refreshFeeds()
+      this.refreshStats()
+    }, 20 * 60 * 1000)
   },
   mounted: function() {
     this.$root.$on('bv::modal::hidden', function(bvEvent, modalId) {

@@ -65,6 +65,10 @@
                         <span v-if="min ==  0">Manually</span>
                         <span v-if="min == 60">Every hour</span>
                     </b-dropdown-item-button>
+                    <b-dropdown-item-button>
+                        <span class="icon mr-1">{% inline "check.svg" %}</span>
+                        <span>Interval: {{ refreshRate }}</span>
+                    </b-dropdown-item-button>
 
                     <b-dropdown-divider></b-dropdown-divider>
 
@@ -276,27 +280,13 @@
                 <div class="text-muted">
                     <div>{{ feedsById[itemSelectedDetails.feed_id].title }}</div>
                     <time>{{ formatDate(itemSelectedDetails.date) }}</time>
-                    <div>
-                        Original link:
-                        <a
-                            target="_blank"
-                            :href="itemSelectedDetails.link">
-                                {{ itemSelectedDetails.link }}
-                        </a>
-                    </div>
                 </div>
                 <hr>
                 <audio class="w-100" controls v-if="itemSelectedDetails.podcast_url" :src="itemSelectedDetails.podcast_url"></audio>
-                <div v-if="itemSelectedDetails.guid.indexOf('yt:video:') > -1">
-                    <iframe
-                        width="960"
-                        height="540"
-                        v-bind:src="'https://www.youtube.com/embed/' + itemSelectedDetails.guid.split('yt:video:')[1]"
-                        title="YouTube video player"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen></iframe>
-                </div>
+                <youtube-iframe
+                    v-if="itemSelectedDetails.link && itemSelectedDetails.link.indexOf('youtube.com') > -1"
+                    :ytlink="itemSelectedDetails.link"
+                ></youtube-iframe>
                 <div v-html="itemSelectedContent"></div>
             </div>
         </div>
